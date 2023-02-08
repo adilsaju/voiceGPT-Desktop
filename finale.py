@@ -24,6 +24,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 
+import pygame
+
 
 ENGINE = os.environ.get("GPT_ENGINE") or "text-chat-davinci-002-20221122"
 
@@ -777,6 +779,7 @@ class MyApp(QWidget):
         if not self.args.stream:
             response = self.chatbot.ask(prompt, temperature=self.args.temperature)
             self.output_text.setText(self.output_text.toPlainText()+"\nChatGPT: " + response["choices"][0]["text"])
+            #call speak
             self.output_text.setText(self.output_text.toPlainText()+"\n")
         else:
             self.output_text.setText(self.output_text.toPlainText()+"\nChatGPT: ")
@@ -784,6 +787,7 @@ class MyApp(QWidget):
             for response in self.chatbot.ask_stream(prompt, temperature=self.args.temperature):
                 self.output_text.setText(self.output_text.toPlainText()+" "+response)
                 sys.stdout.flush()
+            #call speak
             self.output_text.setText(self.output_text.toPlainText()+"\n")
             # self.output_text.setText()
 
