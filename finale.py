@@ -690,19 +690,19 @@ class MyApp(QWidget):
         # Create a red round button
         self.red_button = QPushButton("Start Talking..")
         self.red_button.setFixedSize(100, 100)
-        self.red_button.setStyleSheet("background-color: red; border-radius: 50px;")
-        # self.red_button.setStyleSheet("""
-        #     background-color: red; 
-        #     border-radius: 50px;
-        #     color: white;
-        #     padding: 10px;
-        #     text-align: center;
-        #     font-size: 16px;
+        # self.red_button.setStyleSheet("background-color: red; border-radius: 50px;")
+        self.red_button.setStyleSheet("""
+            background-color: red; 
+            border-radius: 50px;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
 
-        #     QPushButton:hover {
-        #         background-color: orange;
-        #     }
-        # """)
+            QPushButton:hover {
+                background-color: orange;
+            }
+        """)
         # Create a red round button
         # self.red_button2 = QPushButton("Click Me")
         # self.red_button2.setFixedSize(100, 100)
