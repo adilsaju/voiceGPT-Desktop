@@ -680,7 +680,7 @@ class MyApp(QWidget):
 
 
         # Create a label for the text input
-        input_label = QLabel("voiceGPT:")
+        input_label = QLabel("voiceGPT")
         input_label.setFont(QFont("Arial", 12))
 
         # Create a text input
@@ -691,18 +691,34 @@ class MyApp(QWidget):
         self.red_button = QPushButton("Start Talking..")
         self.red_button.setFixedSize(100, 100)
         self.red_button.setStyleSheet("background-color: red; border-radius: 50px;")
+        # self.red_button.setStyleSheet("""
+        #     background-color: red; 
+        #     border-radius: 50px;
+        #     color: white;
+        #     padding: 10px;
+        #     text-align: center;
+        #     font-size: 16px;
 
+        #     QPushButton:hover {
+        #         background-color: orange;
+        #     }
+        # """)
         # Create a red round button
-        self.red_button2 = QPushButton("Click Me")
-        self.red_button2.setFixedSize(100, 100)
-        self.red_button2.setStyleSheet("background-color: orange; border-radius: 50px;")
+        # self.red_button2 = QPushButton("Click Me")
+        # self.red_button2.setFixedSize(100, 100)
+        # self.red_button2.setStyleSheet("background-color: orange; border-radius: 50px;")
 
         # Create a text box to display the result
-        self.output_text = QLabel("")
+        # self.output_text = QLabel("")
+        self.output_text = QTextEdit()
+        self.output_text.setReadOnly(True)
+
         self.output_text.setFont(QFont("Arial", 12))
  
         # making label multi-line
-        self.output_text.setWordWrap(True)
+        # self.output_text.setWordWrap(True)
+
+
         # Create a text box to display the result
         # self.output_text_l = QLabel("")
         # self.output_text_l.setFont(QFont("Arial", 18))
@@ -749,10 +765,10 @@ class MyApp(QWidget):
     def start_record(self):
         # main2()
 
-        self.output_text.setText(self.output_text.text()+"\nUser:\n")
+        self.output_text.setText(self.output_text.toPlainText()+"\nUser:\n")
         prompt=main3()
-        self.output_text.setText(self.output_text.text()+"\n"+prompt+"\n")
-        self.output_text.setText(self.output_text.text()+"\n"+"..."+"\n")
+        self.output_text.setText(self.output_text.toPlainText()+"\n"+prompt+"\n")
+        self.output_text.setText(self.output_text.toPlainText()+"\n"+"________________"+"\n")
 
         #chatbot response
 
@@ -760,13 +776,15 @@ class MyApp(QWidget):
 
         if not self.args.stream:
             response = self.chatbot.ask(prompt, temperature=self.args.temperature)
-            self.output_text.setText(self.output_text.text()+"\nChatGPT: " + response["choices"][0]["text"])
+            self.output_text.setText(self.output_text.toPlainText()+"\nChatGPT: " + response["choices"][0]["text"])
+            self.output_text.setText(self.output_text.toPlainText()+"\n")
         else:
-            self.output_text.setText(self.output_text.text()+"\nChatGPT: ")
+            self.output_text.setText(self.output_text.toPlainText()+"\nChatGPT: ")
             sys.stdout.flush()
             for response in self.chatbot.ask_stream(prompt, temperature=self.args.temperature):
-                self.output_text.setText(self.output_text.text()+" "+response)
+                self.output_text.setText(self.output_text.toPlainText()+" "+response)
                 sys.stdout.flush()
+            self.output_text.setText(self.output_text.toPlainText()+"\n")
             # self.output_text.setText()
 
     #QUIT APPPPPP
