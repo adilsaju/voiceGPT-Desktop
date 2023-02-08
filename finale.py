@@ -24,7 +24,10 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 
+#tts
 import pygame
+from time import sleep
+from google.cloud import texttospeech
 
 
 ENGINE = os.environ.get("GPT_ENGINE") or "text-chat-davinci-002-20221122"
@@ -516,6 +519,60 @@ def listen_print_loop(responses):
 
             num_chars_printed = 0
 
+#tts2.0
+def tts(given_text):
+    audio_name="op.mp3"
+    # Instantiates a client
+    client = texttospeech.TextToSpeechClient()
+
+    # Set the text input to be synthesized
+    synthesis_input = texttospeech.SynthesisInput(text=given_text)
+
+    # Build the voice request, select the language code ("en-US") and the ssml
+    # voice gender ("neutral")
+    voice = texttospeech.VoiceSelectionParams(
+        language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+    )
+
+    # Select the type of audio file you want returned
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
+    # Perform the text-to-speech request on the text input with the selected
+    # voice parameters and audio file type
+    response = client.synthesize_speech(
+        input=synthesis_input, voice=voice, audio_config=audio_config
+    )
+
+    def game():
+
+        pygame.init()
+
+        # Load the MP3 file
+        pygame.mixer.music.load(audio_name)
+
+        # Play the MP3 file
+        pygame.mixer.music.play()
+
+        # Keep the program running until the music has finished playing
+        clock = pygame.time.Clock()
+        while pygame.mixer.music.get_busy():
+            clock.tick(30)
+
+        # Quit Pygame
+        pygame.quit()
+
+
+    # The response's audio_content is binary.
+    with open(audio_name, "wb") as out:
+        # Write the response to the output file.
+        #call game
+        out.write(response.audio_content)
+        print('Audio content written to file ' + audio_name)
+        sleep(1)
+        game()
+        
 
 
 def main3():
@@ -683,28 +740,32 @@ class MyApp(QWidget):
 
         # Create a label for the text input
         input_label = QLabel("voiceGPT")
-        input_label.setFont(QFont("Arial", 12))
+        input_label.setFont(QFont("Arial", 20))
 
         # Create a text input
         self.input_text = QLineEdit()
         self.input_text.setFont(QFont("Arial", 12))
 
         # Create a red round button
-        self.red_button = QPushButton("Start Talking..")
-        self.red_button.setFixedSize(100, 100)
-        # self.red_button.setStyleSheet("background-color: red; border-radius: 50px;")
-        self.red_button.setStyleSheet("""
-            background-color: red; 
-            border-radius: 50px;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            font-size: 16px;
+        self.red_button = QPushButton("Start Talking..🎙️")
+        self.red_button.setFixedSize(100, 70)
+        self.red_button.setFont(QFont("Arial", 12))
 
-            QPushButton:hover {
-                background-color: orange;
-            }
-        """)
+        # self.red_button.setStyleSheet("background-color: red; border-radius: 50px;")
+        # self.red_button.setStyleSheet("""
+        #     background-color: red; 
+        #     border-radius: 50px;
+        #     color: white;
+        #     padding: 10px;
+        #     text-align: center;
+        #     font-size: 16px;
+
+        #     QPushButton:hover {
+        #         background-color: orange;
+        #     }
+        # """)
+
+        
         # Create a red round button
         # self.red_button2 = QPushButton("Click Me")
         # self.red_button2.setFixedSize(100, 100)
@@ -767,29 +828,32 @@ class MyApp(QWidget):
     def start_record(self):
         # main2()
 
-        self.output_text.setText(self.output_text.toPlainText()+"\nUser:\n")
+        self.output_text.setText(self.output_text.toPlainText()+"\nUser: ")
         prompt=main3()
-        self.output_text.setText(self.output_text.toPlainText()+"\n"+prompt+"\n")
-        self.output_text.setText(self.output_text.toPlainText()+"\n"+"________________"+"\n")
+        self.output_text.setText(self.output_text.toPlainText()+" "+prompt+"\n")
+        # self.output_text.setText(self.output_text.toPlainText()+"\n"+"________________"+"\n")
 
         #chatbot response
-
 
 
         if not self.args.stream:
             response = self.chatbot.ask(prompt, temperature=self.args.temperature)
             self.output_text.setText(self.output_text.toPlainText()+"\nChatGPT: " + response["choices"][0]["text"])
-            #call speak
             self.output_text.setText(self.output_text.toPlainText()+"\n")
+            #call speak
+            tts(response["choices"][0]["text"])
         else:
             self.output_text.setText(self.output_text.toPlainText()+"\nChatGPT: ")
             sys.stdout.flush()
+            str1 = ""
             for response in self.chatbot.ask_stream(prompt, temperature=self.args.temperature):
                 self.output_text.setText(self.output_text.toPlainText()+" "+response)
+                str1 = str1 + " " + response
                 sys.stdout.flush()
-            #call speak
             self.output_text.setText(self.output_text.toPlainText()+"\n")
             # self.output_text.setText()
+            #call speak
+            tts(str1)
 
     #QUIT APPPPPP
     def stop_record(self):
