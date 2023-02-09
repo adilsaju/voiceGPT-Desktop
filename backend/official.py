@@ -10,7 +10,7 @@ from datetime import date
 import openai
 import tiktoken
 
-ENGINE = os.environ.get("GPT_ENGINE") or "text-chat-davinci-002-20221122"
+ENGINE = os.environ.get("GPT_ENGINE") or "text-davinci-003"
 
 ENCODER = tiktoken.get_encoding("gpt2")
 
@@ -470,11 +470,20 @@ def main():
                 continue
         if not args.stream:
             response = chatbot.ask(prompt, temperature=args.temperature)
-            print("ChatGPT: " + response["choices"][0]["text"])
+            print("ChatGPT: " + response["choices"][0]["text"],end="")
+            if "<|" in response:
+                response.removeprefix("<|")
+
+            
         else:
             print("ChatGPT: ")
             sys.stdout.flush()
             for response in chatbot.ask_stream(prompt, temperature=args.temperature):
+                if "<|" in response:
+                    response.replace("<|im","")
+                    print(response, end="")
+                    sys.stdout.flush()
+                    break
                 print(response, end="")
                 sys.stdout.flush()
             print()
