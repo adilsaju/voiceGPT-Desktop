@@ -1,5 +1,7 @@
 # voiceGPT-Desktop
 
+ChatGPT with voice capabilities (like Alexa) 🔥🎤
+
 ### HOW TO DOWNLOAD LATEST
 
 https://drive.google.com/file/d/1cxWuD2cfX5yCUZdUdoWPnqDGQyHPdTl2/view?usp=sharing
